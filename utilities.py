@@ -80,4 +80,5 @@ def reverse_square(base, coefficient):
 def health_decay(health, param):
     """
     Essentially functions like a halflife for organ health
+    (1-(currenthealth-param_val) * currenthealth ???
     """
