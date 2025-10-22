@@ -28,6 +28,17 @@ class Receptor(BioChemGene):
     """
     I'm thinking that this gets passed in class methods for the organ, and adjusts the params by calling those functions
     """
+    def set_positive(self, positive=True):
+        if positive:
+            self._multiplier = 1
+        else:
+            self._multiplier = -1
+
+    def set_negative(self, negative=True):
+        if negative:
+            self._multiplier = -1
+        else:
+            self._multiplier = 1
     def set_parameter(self, name, parameter):
         """
         Sets what this gene can adjust in the organ. Presently needs to be passed a function from the organ, such as organ.get_rate() or organ.get_health(), these are then averaged over all receptors in organ
