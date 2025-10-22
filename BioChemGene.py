@@ -16,19 +16,26 @@ Absorption rates:
 Initialcondition: HOw much of a chemical is present at birth, and the cost of reproduction
 """
 class BioChemGene:
-    def __init__(self, organ):
+    def __init__(self, organ, type):
         self._organ = organ
         self._id = None  # Have a simple id creator in utilities
-
+        self._type = type
+    
     def set_activation(self, name, function):
         self._activation_function = function
         self._func_name = name
+
+    def get_type(self):
+        return self._type
         
 class Receptor(BioChemGene):
     """
     I'm thinking that this gets passed in class methods for the organ, and adjusts the params by calling those functions
     """
     def set_positive(self, positive=True):
+        """
+        Can be toggled to have the signal be additive or negative
+        """
         if positive:
             self._multiplier = 1
         else:
@@ -39,6 +46,7 @@ class Receptor(BioChemGene):
             self._multiplier = -1
         else:
             self._multiplier = 1
+            
     def set_parameter(self, name, parameter):
         """
         Sets what this gene can adjust in the organ. Presently needs to be passed a function from the organ, such as organ.get_rate() or organ.get_health(), these are then averaged over all receptors in organ
@@ -91,11 +99,10 @@ class Emitter(BioChemGene):
     Reads a parameter from the host organ, and outputs a specific chemical with a strength modified by organ health
     """
 
-    def set_parameter(self, name, parameter):
+    def set_parameter(self, name):
         """
         Sets the organs attribute to monitor
         """
-        self._parameter = parameter
         self._param_name = name
 
     def set_chemical(self, chemical):
@@ -111,7 +118,7 @@ class Emitter(BioChemGene):
         return self._organ.get_parameter(self.parameter_name)
 
     def get_output_amt(self):
-        return self._activation_function(self.read_param) * self._rate
+        return self._activation_function(self.read_param()) * self._rate
 
     def release_chemical(self):
         self._organ.release_chemical(self._chemical, self.get_output_amt())
