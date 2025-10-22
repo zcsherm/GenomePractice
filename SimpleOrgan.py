@@ -84,4 +84,5 @@ class InternalOrgan(Organ):
                 gene.adjust_parameter()
             elif type == 'emitter':
                 gene.release_chemical()
-                
+        self._reaction_rate = sum(self._reaction_rate_receptors) / len(self._reaction_rate_receptors)
+        self._act_rate = sum(self._act_rate_receptors) / len(self._act_rate_receptors)
