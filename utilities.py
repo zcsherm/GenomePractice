@@ -76,3 +76,8 @@ def reverse_square(base, coefficient):
     def rev(x):
         return (base ** (coefficient * x * -1)) ** .5
     return rev
+
+def health_decay(health, param):
+    """
+    Essentially functions like a halflife for organ health
+    """
