@@ -100,5 +100,6 @@ def health_decay(health, param):
             t = 0.0 if b == 1.0 else smoothstep((a - b) / (1 - b)) ** q
             return b * (1 - t) + R * t
 
+
     for i in range(20):
         print(terrace(i / 20, .1))
