@@ -2,6 +2,20 @@ import string
 import random
 import math
 
+"""
+Constants for health decay function
+"""
+P_ONE = -.05
+Q_ONE = .96
+P_TWO = .22
+Q_TWO = .79
+COEF_ONE = 3
+COEF_TWO = 1.1
+R = 1.5
+V = 0
+
+
+
 def generate_id(length=10):
     """
     Generate a 'unique' id for an object
@@ -80,9 +94,10 @@ def reverse_square(base, coefficient):
 def health_decay(health, param):
     """
     Essentially functions like a halflife for organ health
-    (1-(currenthealth-param_val) * currenthealth ???
+    Forms an equation with 3 plateaus, one at param=0, one at param=health, and one at param=1
+    equation parameters primarily control steepness of slopes and they y value of the 0 and 1 slopes. V controls  the position of center slope Ideal is around .04, but causes issues where f(health=param) < health., stability causes decay
     """
-
+    a = param + V
     def smoothstep(x):
         if x <= 0.0: return 0.0
         if x >= 1.0: return 1.0
@@ -90,15 +105,19 @@ def health_decay(health, param):
 
     def terrace(a, b, q=2.0):
         # plateau maps (fit to examples)
-        L = max(0.0, -0.1267 + 0.9467 * b)
-        R = min(1.0, 0.2000 + 0.8000 * b)
+        param_p_one = COEF_ONE * sqrt(b) * P_ONE
+        param_p_two = COEF_TWO * sqrt(b) * P_TWO
+        L = max(0.0, param_p_one + Q_ONE * b)
+        R = min(1.0, param_p_one + Q_TWO * b)
 
         if a <= b:
-            t = 0.0 if b == 0.0 else smoothstep(a / b) ** q
+            t = 0.0 if b <= 0.0 else smoothstep(a / b) ** R
             return L * (1 - t) + b * t
-        else:
-            t = 0.0 if b == 1.0 else smoothstep((a - b) / (1 - b)) ** q
+        elif b < a <= 1-v:
+            t = 0.0 if b >= 1.0 else smoothstep((a - b) / (1 - b)) ** R
             return b * (1 - t) + R * t
+        else:
+            return terrace(1-v)
 
 
     for i in range(20):
