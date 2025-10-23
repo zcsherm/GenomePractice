@@ -82,3 +82,23 @@ def health_decay(health, param):
     Essentially functions like a halflife for organ health
     (1-(currenthealth-param_val) * currenthealth ???
     """
+
+    def smoothstep(x):
+        if x <= 0.0: return 0.0
+        if x >= 1.0: return 1.0
+        return 3 * x * x - 2 * x * x * x
+
+    def terrace(a, b, q=2.0):
+        # plateau maps (fit to examples)
+        L = max(0.0, -0.1267 + 0.9467 * b)
+        R = min(1.0, 0.2000 + 0.8000 * b)
+
+        if a <= b:
+            t = 0.0 if b == 0.0 else smoothstep(a / b) ** q
+            return L * (1 - t) + b * t
+        else:
+            t = 0.0 if b == 1.0 else smoothstep((a - b) / (1 - b)) ** q
+            return b * (1 - t) + R * t
+
+    for i in range(20):
+        print(terrace(i / 20, .1))
