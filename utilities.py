@@ -97,7 +97,7 @@ def health_decay(health, param):
     Forms an equation with 3 plateaus, one at param=0, one at param=health, and one at param=1
     equation parameters primarily control steepness of slopes and they y value of the 0 and 1 slopes. V controls  the position of center slope Ideal is around .04, but causes issues where f(health=param) < health., stability causes decay
     """
-    a = param + V
+
     def smoothstep(x):
         if x <= 0.0: return 0.0
         if x >= 1.0: return 1.0
@@ -105,20 +105,27 @@ def health_decay(health, param):
 
     def terrace(a, b, q=2.0):
         # plateau maps (fit to examples)
-        param_p_one = COEF_ONE * sqrt(b) * P_ONE
-        param_p_two = COEF_TWO * sqrt(b) * P_TWO
+        param_p_one = COEF_ONE * b**.5 * P_ONE
+        param_p_two = COEF_TWO * b**.5 * P_TWO
         L = max(0.0, param_p_one + Q_ONE * b)
-        R = min(1.0, param_p_one + Q_TWO * b)
-
+        M = min(1.0, param_p_two + Q_TWO * b)
+        a = a + V
         if a <= b:
             t = 0.0 if b <= 0.0 else smoothstep(a / b) ** R
             return L * (1 - t) + b * t
-        elif b < a <= 1-v:
+        elif b < a <= 1-V:
             t = 0.0 if b >= 1.0 else smoothstep((a - b) / (1 - b)) ** R
-            return b * (1 - t) + R * t
+            return b * (1 - t) + M * t
         else:
-            return terrace(1-v)
+            return terrace(1-V,b)
 
+    return terrace(param, health)
 
-    for i in range(20):
-        print(terrace(i / 20, .1))
+for i in range(21):
+    print(health_decay(.98, i/20))
+
+b=.5
+a= .2
+for i in range(30):
+    b=health_decay(b,a-a*(i/30))
+    print(b)
